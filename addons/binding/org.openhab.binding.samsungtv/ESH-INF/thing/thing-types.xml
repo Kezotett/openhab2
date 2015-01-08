@@ -215,7 +215,6 @@
 			<channel id="key_factory" typeId="key-channel-advanced" />
 			<channel id="key_favch" typeId="key-channel-advanced" />
 			<channel id="key_ff" typeId="key-channel-advanced" />
-			<channel id="key_ff_" typeId="key-channel-advanced" />
 			<channel id="key_fm_radio" typeId="key-channel-advanced" />
 			<channel id="key_game" typeId="key-channel-advanced" />
 			<channel id="key_green" typeId="key-channel-advanced" />
@@ -281,7 +280,6 @@
 			<channel id="key_reserved1" typeId="key-channel-advanced" />
 			<channel id="key_return" typeId="key-channel-advanced" />
 			<channel id="key_rewind" typeId="key-channel-advanced" />
-			<channel id="key_rewind_" typeId="key-channel-advanced" />
 			<channel id="key_right" typeId="key-channel-advanced" />
 			<channel id="key_rss" typeId="key-channel-advanced" />
 			<channel id="key_internet" typeId="key-channel-advanced" />
