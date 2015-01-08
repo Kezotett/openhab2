@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,10 +24,10 @@ import com.google.common.collect.Lists;
  */
 public class MaxBinding {
 
-	 public static final String BINDING_ID = "max";
+	public static final String BINDING_ID = "max";
 	public static final String SERIAL_NUMBER = "serialNumber";
+	public static final String IP_ADDRESS = "ipAddress";
 
-	   
 	 // List of main device types 
 	   public static final String DEVICE_THERMOSTAT = "thermostat";
 	   public static final String DEVICE_THERMOSTATPLUS = "thermostatplus";

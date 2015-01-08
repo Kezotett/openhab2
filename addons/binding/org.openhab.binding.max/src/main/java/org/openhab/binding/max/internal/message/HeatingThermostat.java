@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2014, openHAB.org and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -128,7 +128,7 @@ public class HeatingThermostat extends Device {
 	 * @param value the setpoint temperature raw value as provided by the L message
 	 */
 	public void setTemperatureSetpoint(int value) {
-		if(this.temperatureSetpoint != (value / 2.0) ) setUpdated (true);
+		if(Math.abs(this.temperatureSetpoint - (value / 2.0)) > 0.1 ) setUpdated (true);
 		this.temperatureSetpoint = value / 2.0;
 	}
 

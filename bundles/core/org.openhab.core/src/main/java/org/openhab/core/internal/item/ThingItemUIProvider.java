@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2014, openHAB.org and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -66,7 +66,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 		}
 		
 		for(Thing thing : thingRegistry.getAll()) {
-			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+			if(thing.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_").equals(itemName)) {
 				String icon = null;
 				if(thing instanceof Bridge) {
 					icon = "network";
@@ -80,7 +80,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 				}
 			}
 			for(Channel ch : thing.getChannels()) {
-				if(ch.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+				if(ch.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_").equals(itemName)) {
 					if(ch.getAcceptedItemType().equals("Color")) {
 						return "switch";
 					}
@@ -98,7 +98,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 		if(!enabled) return null;
 		
  		for(Thing thing : thingRegistry.getAll()) {
-			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+			if(thing.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_").equals(itemName)) {
 				String label = (String) thing.getConfiguration().get("label");
 				if(label!=null && !label.isEmpty()) {
 					return label;
@@ -107,7 +107,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 				}
 			}
 			for(Channel channel : thing.getChannels()) {
-				if(channel.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+				if(channel.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_").equals(itemName)) {
 					String label = (String) StringUtils.capitalize(channel.getUID().getId());
 					ThingType thingType = thingTypeRegistry.getThingType(thing.getThingTypeUID());
 					if(thingType!=null) {
@@ -163,9 +163,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 	}
 
 	/*default*/ GroupItem createItemsForThing(Thing thing) {
-		GroupItem group = new GroupItem(thing.getUID().toString().replaceAll(":",  "_"));
+		GroupItem group = new GroupItem(thing.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_"));
 		for(Channel channel : thing.getChannels()) {
-			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_"));
+			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_"));
 			if(item!=null) {
 				if(group.getMembers().contains(item)) {
 					group.removeMember(item);
@@ -180,7 +180,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 			}
 		}
 		if(thing.getBridgeUID()!=null) {
-			group.addGroupName(thing.getBridgeUID().toString().replaceAll(":",  "_"));
+			group.addGroupName(thing.getBridgeUID().toString().replaceAll(":",  "_").replaceAll("#",  "_"));
 		} else {
 			group.addGroupName("Things");
 		}
