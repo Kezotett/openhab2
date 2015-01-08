@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="samsungtv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mediarenderer">
+		<label>Samsung TV - Media Renderer</label>
+		<description>Media Renderer sub device allows to control TV volume and display parameters</description>
+
+		<channels>
+			<channel id="volume" typeId="volume-channel" />
+			<channel id="mute" typeId="mute-channel" />
+			<channel id="brightness" typeId="brightness-channel" />
+			<channel id="contrast" typeId="contrast-channel" />
+			<channel id="sharpness" typeId="sharpness-channel" />
+			<channel id="colortemperature" typeId="colortemperature-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Samsung TV UPnP Device</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh_interval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur</description>
+				<default>10000</default>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="tvagent">
+		<label>Samsung TV - TV Agent</label>
+		<description>TV Agent sub device allows to control TV channel and source information</description>
+
+		<channels>
+			<channel id="sourcename" typeId="sourcename-channel" />
+			<channel id="sourceid" typeId="sourceid-channel" />
+			<channel id="channel" typeId="channel-channel" />
+			<channel id="programtitle" typeId="programtitle-channel" />
+			<channel id="channelname" typeId="channelname-channel" />
+			<channel id="url" typeId="url-channel" />
+			<channel id="stopbrowser" typeId="stopbrowser-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Samsung TV UPnP Device</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="refresh_interval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur</description>
+				<default>10000</default>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="remotecontroller">
+		<label>Samsung TV - Remote Controller</label>
+		<description>Remote Controller sub device allows to send virtual infrared remote controller button presses to TV</description>
+
+		<channels>
+			<channel id="keycode" typeId="keycode-channel" />
+
+			<channel id="key_chdown" typeId="key-channel" />
+			<channel id="key_chup" typeId="key-channel" />
+			<channel id="key_hdmi" typeId="key-channel" />
+			<channel id="key_mute" typeId="key-channel" />
+			<channel id="key_power" typeId="key-channel" />
+			<channel id="key_poweroff" typeId="key-channel" />
+			<channel id="key_poweron" typeId="key-channel" />
+			<channel id="key_voldown" typeId="key-channel" />
+			<channel id="key_volup" typeId="key-channel" />
+
+			<channel id="key_0" typeId="key-channel-advanced" />
+			<channel id="key_1" typeId="key-channel-advanced" />
+			<channel id="key_2" typeId="key-channel-advanced" />
+			<channel id="key_3" typeId="key-channel-advanced" />
+			<channel id="key_4" typeId="key-channel-advanced" />
+			<channel id="key_5" typeId="key-channel-advanced" />
+			<channel id="key_6" typeId="key-channel-advanced" />
+			<channel id="key_7" typeId="key-channel-advanced" />
+			<channel id="key_8" typeId="key-channel-advanced" />
+			<channel id="key_9" typeId="key-channel-advanced" />
+			<channel id="key_11" typeId="key-channel-advanced" />
+			<channel id="key_12" typeId="key-channel-advanced" />
+			<channel id="key_3speed" typeId="key-channel-advanced" />
+			<channel id="key_4_3" typeId="key-channel-advanced" />
+			<channel id="key_16_9" typeId="key-channel-advanced" />
+			<channel id="key_ad" typeId="key-channel-advanced" />
+			<channel id="key_adddel" typeId="key-channel-advanced" />
+			<channel id="key_alt_mhp" typeId="key-channel-advanced" />
+			<channel id="key_angle" typeId="key-channel-advanced" />
+			<channel id="key_antena" typeId="key-channel-advanced" />
+			<channel id="key_anynet" typeId="key-channel-advanced" />
+			<channel id="key_anyview" typeId="key-channel-advanced" />
+			<channel id="key_app_list" typeId="key-channel-advanced" />
+			<channel id="key_aspect" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_antenna_air" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_antenna_cable" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_antenna_satellite" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_anynet_auto_start" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_anynet_mode_ok" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_autocolor_fail" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_autocolor_success" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_caption_eng" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_caption_kor" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_caption_off" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_caption_on" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_c_force_aging" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_jack_ident" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_lna_off" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_lna_on" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_ch_change" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_double" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_large" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_left_bottom" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_left_top" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_right_bottom" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_right_top" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_small" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_source_change" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_pip_wide" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_reset" typeId="key-channel-advanced" />
+			<channel id="key_auto_arc_usbjack_inspect" typeId="key-channel-advanced" />
+			<channel id="key_auto_format" typeId="key-channel-advanced" />
+			<channel id="key_auto_program" typeId="key-channel-advanced" />
+			<channel id="key_av1" typeId="key-channel-advanced" />
+			<channel id="key_av2" typeId="key-channel-advanced" />
+			<channel id="key_av3" typeId="key-channel-advanced" />
+			<channel id="key_back_mhp" typeId="key-channel-advanced" />
+			<channel id="key_bookmark" typeId="key-channel-advanced" />
+			<channel id="key_caller_id" typeId="key-channel-advanced" />
+			<channel id="key_caption" typeId="key-channel-advanced" />
+			<channel id="key_catv_mode" typeId="key-channel-advanced" />
+			<channel id="key_ch_list" typeId="key-channel-advanced" />
+			<channel id="key_clear" typeId="key-channel-advanced" />
+			<channel id="key_clock_display" typeId="key-channel-advanced" />
+			<channel id="key_component1" typeId="key-channel-advanced" />
+			<channel id="key_component2" typeId="key-channel-advanced" />
+			<channel id="key_contents" typeId="key-channel-advanced" />
+			<channel id="key_convergence" typeId="key-channel-advanced" />
+			<channel id="key_convert_audio_mainsub" typeId="key-channel-advanced" />
+			<channel id="key_custom" typeId="key-channel-advanced" />
+			<channel id="key_cyan" typeId="key-channel-advanced" />
+			<channel id="key_blue" typeId="key-channel-advanced" />
+			<channel id="key_device_connect" typeId="key-channel-advanced" />
+			<channel id="key_disc_menu" typeId="key-channel-advanced" />
+			<channel id="key_dma" typeId="key-channel-advanced" />
+			<channel id="key_dnet" typeId="key-channel-advanced" />
+			<channel id="key_dnie" typeId="key-channel-advanced" />
+			<channel id="key_dnse" typeId="key-channel-advanced" />
+			<channel id="key_door" typeId="key-channel-advanced" />
+			<channel id="key_down" typeId="key-channel-advanced" />
+			<channel id="key_dss_mode" typeId="key-channel-advanced" />
+			<channel id="key_dtv" typeId="key-channel-advanced" />
+			<channel id="key_dtv_link" typeId="key-channel-advanced" />
+			<channel id="key_dtv_signal" typeId="key-channel-advanced" />
+			<channel id="key_dvd_mode" typeId="key-channel-advanced" />
+			<channel id="key_dvi" typeId="key-channel-advanced" />
+			<channel id="key_dvr" typeId="key-channel-advanced" />
+			<channel id="key_dvr_menu" typeId="key-channel-advanced" />
+			<channel id="key_dynamic" typeId="key-channel-advanced" />
+			<channel id="key_enter" typeId="key-channel-advanced" />
+			<channel id="key_entertainment" typeId="key-channel-advanced" />
+			<channel id="key_esaving" typeId="key-channel-advanced" />
+			<channel id="key_exit" typeId="key-channel-advanced" />
+			<channel id="key_ext1" typeId="key-channel-advanced" />
+			<channel id="key_ext2" typeId="key-channel-advanced" />
+			<channel id="key_ext3" typeId="key-channel-advanced" />
+			<channel id="key_ext4" typeId="key-channel-advanced" />
+			<channel id="key_ext5" typeId="key-channel-advanced" />
+			<channel id="key_ext6" typeId="key-channel-advanced" />
+			<channel id="key_ext7" typeId="key-channel-advanced" />
+			<channel id="key_ext8" typeId="key-channel-advanced" />
+			<channel id="key_ext9" typeId="key-channel-advanced" />
+			<channel id="key_ext10" typeId="key-channel-advanced" />
+			<channel id="key_ext11" typeId="key-channel-advanced" />
+			<channel id="key_ext12" typeId="key-channel-advanced" />
+			<channel id="key_ext13" typeId="key-channel-advanced" />
+			<channel id="key_ext14" typeId="key-channel-advanced" />
+			<channel id="key_ext15" typeId="key-channel-advanced" />
+			<channel id="key_ext16" typeId="key-channel-advanced" />
+			<channel id="key_ext17" typeId="key-channel-advanced" />
+			<channel id="key_ext18" typeId="key-channel-advanced" />
+			<channel id="key_ext19" typeId="key-channel-advanced" />
+			<channel id="key_ext20" typeId="key-channel-advanced" />
+			<channel id="key_ext21" typeId="key-channel-advanced" />
+			<channel id="key_ext22" typeId="key-channel-advanced" />
+			<channel id="key_ext23" typeId="key-channel-advanced" />
+			<channel id="key_ext24" typeId="key-channel-advanced" />
+			<channel id="key_ext25" typeId="key-channel-advanced" />
+			<channel id="key_ext26" typeId="key-channel-advanced" />
+			<channel id="key_ext27" typeId="key-channel-advanced" />
+			<channel id="key_ext28" typeId="key-channel-advanced" />
+			<channel id="key_ext29" typeId="key-channel-advanced" />
+			<channel id="key_ext30" typeId="key-channel-advanced" />
+			<channel id="key_ext31" typeId="key-channel-advanced" />
+			<channel id="key_ext32" typeId="key-channel-advanced" />
+			<channel id="key_ext33" typeId="key-channel-advanced" />
+			<channel id="key_ext34" typeId="key-channel-advanced" />
+			<channel id="key_ext35" typeId="key-channel-advanced" />
+			<channel id="key_ext36" typeId="key-channel-advanced" />
+			<channel id="key_ext37" typeId="key-channel-advanced" />
+			<channel id="key_ext38" typeId="key-channel-advanced" />
+			<channel id="key_ext39" typeId="key-channel-advanced" />
+			<channel id="key_ext40" typeId="key-channel-advanced" />
+			<channel id="key_ext41" typeId="key-channel-advanced" />
+			<channel id="key_factory" typeId="key-channel-advanced" />
+			<channel id="key_favch" typeId="key-channel-advanced" />
+			<channel id="key_ff" typeId="key-channel-advanced" />
+			<channel id="key_ff_" typeId="key-channel-advanced" />
+			<channel id="key_fm_radio" typeId="key-channel-advanced" />
+			<channel id="key_game" typeId="key-channel-advanced" />
+			<channel id="key_green" typeId="key-channel-advanced" />
+			<channel id="key_guide" typeId="key-channel-advanced" />
+			<channel id="key_hdmi" typeId="key-channel-advanced" />
+			<channel id="key_hdmi1" typeId="key-channel-advanced" />
+			<channel id="key_hdmi2" typeId="key-channel-advanced" />
+			<channel id="key_hdmi3" typeId="key-channel-advanced" />
+			<channel id="key_hdmi4" typeId="key-channel-advanced" />
+			<channel id="key_help" typeId="key-channel-advanced" />
+			<channel id="key_home" typeId="key-channel-advanced" />
+			<channel id="key_id_input" typeId="key-channel-advanced" />
+			<channel id="key_id_setup" typeId="key-channel-advanced" />
+			<channel id="key_info" typeId="key-channel-advanced" />
+			<channel id="key_instant_replay" typeId="key-channel-advanced" />
+			<channel id="key_left" typeId="key-channel-advanced" />
+			<channel id="key_link" typeId="key-channel-advanced" />
+			<channel id="key_live" typeId="key-channel-advanced" />
+			<channel id="key_magic_bright" typeId="key-channel-advanced" />
+			<channel id="key_magic_channel" typeId="key-channel-advanced" />
+			<channel id="key_mdc" typeId="key-channel-advanced" />
+			<channel id="key_menu" typeId="key-channel-advanced" />
+			<channel id="key_mic" typeId="key-channel-advanced" />
+			<channel id="key_more" typeId="key-channel-advanced" />
+			<channel id="key_movie1" typeId="key-channel-advanced" />
+			<channel id="key_ms" typeId="key-channel-advanced" />
+			<channel id="key_mts" typeId="key-channel-advanced" />
+			<channel id="key_mute" typeId="key-channel-advanced" />
+			<channel id="key_nine_seperate" typeId="key-channel-advanced" />
+			<channel id="key_open" typeId="key-channel-advanced" />
+			<channel id="key_pannel_chdown" typeId="key-channel-advanced" />
+			<channel id="key_pannel_chup" typeId="key-channel-advanced" />
+			<channel id="key_pannel_enter" typeId="key-channel-advanced" />
+			<channel id="key_pannel_menu" typeId="key-channel-advanced" />
+			<channel id="key_pannel_power" typeId="key-channel-advanced" />
+			<channel id="key_pannel_source" typeId="key-channel-advanced" />
+			<channel id="key_pannel_voldow" typeId="key-channel-advanced" />
+			<channel id="key_pannel_volup" typeId="key-channel-advanced" />
+			<channel id="key_panorama" typeId="key-channel-advanced" />
+			<channel id="key_pause" typeId="key-channel-advanced" />
+			<channel id="key_pcmode" typeId="key-channel-advanced" />
+			<channel id="key_perpect_focus" typeId="key-channel-advanced" />
+			<channel id="key_picture_size" typeId="key-channel-advanced" />
+			<channel id="key_pip_chdown" typeId="key-channel-advanced" />
+			<channel id="key_pip_chup" typeId="key-channel-advanced" />
+			<channel id="key_pip_onoff" typeId="key-channel-advanced" />
+			<channel id="key_pip_scan" typeId="key-channel-advanced" />
+			<channel id="key_pip_size" typeId="key-channel-advanced" />
+			<channel id="key_pip_swap" typeId="key-channel-advanced" />
+			<channel id="key_play" typeId="key-channel-advanced" />
+			<channel id="key_plus100" typeId="key-channel-advanced" />
+			<channel id="key_pmode" typeId="key-channel-advanced" />
+			<channel id="key_power" typeId="key-channel-advanced" />
+			<channel id="key_poweroff" typeId="key-channel-advanced" />
+			<channel id="key_poweron" typeId="key-channel-advanced" />
+			<channel id="key_prech" typeId="key-channel-advanced" />
+			<channel id="key_print" typeId="key-channel-advanced" />
+			<channel id="key_program" typeId="key-channel-advanced" />
+			<channel id="key_quick_replay" typeId="key-channel-advanced" />
+			<channel id="key_rec" typeId="key-channel-advanced" />
+			<channel id="key_red" typeId="key-channel-advanced" />
+			<channel id="key_repeat" typeId="key-channel-advanced" />
+			<channel id="key_reserved1" typeId="key-channel-advanced" />
+			<channel id="key_return" typeId="key-channel-advanced" />
+			<channel id="key_rewind" typeId="key-channel-advanced" />
+			<channel id="key_rewind_" typeId="key-channel-advanced" />
+			<channel id="key_right" typeId="key-channel-advanced" />
+			<channel id="key_rss" typeId="key-channel-advanced" />
+			<channel id="key_internet" typeId="key-channel-advanced" />
+			<channel id="key_rsurf" typeId="key-channel-advanced" />
+			<channel id="key_scale" typeId="key-channel-advanced" />
+			<channel id="key_seffect" typeId="key-channel-advanced" />
+			<channel id="key_setup_clock_timer" typeId="key-channel-advanced" />
+			<channel id="key_sleep" typeId="key-channel-advanced" />
+			<channel id="key_sound_mode" typeId="key-channel-advanced" />
+			<channel id="key_source" typeId="key-channel-advanced" />
+			<channel id="key_srs" typeId="key-channel-advanced" />
+			<channel id="key_standard" typeId="key-channel-advanced" />
+			<channel id="key_stb_mode" typeId="key-channel-advanced" />
+			<channel id="key_still_picture" typeId="key-channel-advanced" />
+			<channel id="key_stop" typeId="key-channel-advanced" />
+			<channel id="key_sub_title" typeId="key-channel-advanced" />
+			<channel id="key_svideo1" typeId="key-channel-advanced" />
+			<channel id="key_svideo2" typeId="key-channel-advanced" />
+			<channel id="key_svideo3" typeId="key-channel-advanced" />
+			<channel id="key_tools" typeId="key-channel-advanced" />
+			<channel id="key_topmenu" typeId="key-channel-advanced" />
+			<channel id="key_ttx_mix" typeId="key-channel-advanced" />
+			<channel id="key_ttx_subface" typeId="key-channel-advanced" />
+			<channel id="key_turbo" typeId="key-channel-advanced" />
+			<channel id="key_tv" typeId="key-channel-advanced" />
+			<channel id="key_tv_mode" typeId="key-channel-advanced" />
+			<channel id="key_up" typeId="key-channel-advanced" />
+			<channel id="key_vchip" typeId="key-channel-advanced" />
+			<channel id="key_vcr_mode" typeId="key-channel-advanced" />
+			<channel id="key_voldown" typeId="key-channel-advanced" />
+			<channel id="key_volup" typeId="key-channel-advanced" />
+			<channel id="key_wheel_left" typeId="key-channel-advanced" />
+			<channel id="key_wheel_right" typeId="key-channel-advanced" />
+			<channel id="key_w_link" typeId="key-channel-advanced" />
+			<channel id="key_yellow" typeId="key-channel-advanced" />
+			<channel id="key_zoom1" typeId="key-channel-advanced" />
+			<channel id="key_zoom2" typeId="key-channel-advanced" />
+			<channel id="key_zoom_in" typeId="key-channel-advanced" />
+			<channel id="key_zoom_move" typeId="key-channel-advanced" />
+			<channel id="key_zoom_out" typeId="key-channel-advanced" />
+		</channels>
+
+		<config-description>
+			<parameter name="networkAddress" type="text">
+				<label>Network Address</label>
+				<description>Network address of the Samsung TV</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>TCP Port</label>
+				<description>TCP port of the Samsung TV</description>
+				<required>false</required>
+				<default>55000</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="volume-channel">
+		<item-type>Dimmer</item-type>
+		<label>Volume Channel</label>
+		<description>The volume channel allows to set or get the volume of the TV</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="mute-channel">
+		<item-type>Switch</item-type>
+		<label>Mute channel</label>
+		<description>The mute channel allows to set or get the mute state of the master volume of the TV</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="brightness-channel">
+		<item-type>Dimmer</item-type>
+		<label>Brightness channel</label>
+		<description>The brightness channel allows to set or get the brightness of the TV picture</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="contrast-channel">
+		<item-type>Dimmer</item-type>
+		<label>Contrast channel</label>
+		<description>The contrast channel allows to set or get the contrast of the TV picture</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="sharpness-channel">
+		<item-type>Dimmer</item-type>
+		<label>Sharpness channel</label>
+		<description>The sharpness channel allows to set or get the sharpness of the TV picture</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="colortemperature-channel">
+		<item-type>Number</item-type>
+		<label>Color Temperature channel</label>
+		<description>The color temperature channel allows to set or get the color temperature of the TV picture. Minimum value is 0 and maximum 4.</description>
+		<state readOnly="false" min="0" max="4" />
+	</channel-type>
+
+	<channel-type id="sourcename-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Source Name channel</label>
+		<description>The source name channel allows to get name of the current source</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="sourceid-channel">
+		<item-type>Number</item-type>
+		<label>Samsung TV Binding Source ID channel</label>
+		<description>The source id channel allows to get id of the current source</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="channel-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Channel channel</label>
+		<description>The source id channel allows to get id of the current channel id</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="programtitle-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Program title channel</label>
+		<description>The program title channel allows to get title of the current program</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="channelname-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Channel Name channel</label>
+		<description>The channel name channel allows to get name of the current channel</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="url-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Browser URL channel</label>
+		<description>The URL channel allows to start TV web browser and go the given web page</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="stopbrowser-channel">
+		<item-type>Switch</item-type>
+		<label>Samsung TV Binding Stop Browser channel</label>
+		<description>The stop browser channel allows to stop TV's web browser and go back to TV mode</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="keycode-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Key Code Channel</label>
+		<description>The key code channel emulates the infrared remote controller and allows to send virtual button presses</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="keycode-channel">
+		<item-type>String</item-type>
+		<label>Samsung TV Binding Key Code Channel</label>
+		<description>The key code channel emulates the infrared remote controller and allows to send virtual button presses</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="key-channel">
+		<item-type>Switch</item-type>
+		<label>Samsung TV Binding Key Channel</label>
+		<description>The key channel emulates the infrared remote controller and allows to send virtual button press</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="key-channel-advanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Samsung TV Binding Key Channel</label>
+		<description>The key channel emulates the infrared remote controller and allows to send virtual button press</description>
+		<state readOnly="false" />
+	</channel-type>
+
+</thing:thing-descriptions>
