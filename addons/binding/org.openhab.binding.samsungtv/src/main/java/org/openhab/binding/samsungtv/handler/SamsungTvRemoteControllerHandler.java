@@ -11,11 +11,16 @@ import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.*;
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.discovery.DiscoveryListener;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
@@ -33,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class SamsungTvRemoteControllerHandler extends BaseThingHandler
-		implements UpnpIOParticipant {
+		implements UpnpIOParticipant, DiscoveryListener {
 
 	private Logger logger = LoggerFactory
 			.getLogger(SamsungTvRemoteControllerHandler.class);
@@ -41,9 +46,11 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 	private final static int DEFAULT_TV_PORT = 55000;
 
 	private UpnpIOService service;
+	private DiscoveryServiceRegistry discoveryServiceRegistry;
 
 	public SamsungTvRemoteControllerHandler(Thing thing,
-			UpnpIOService upnpIOService) {
+			UpnpIOService upnpIOService,
+			DiscoveryServiceRegistry discoveryServiceRegistry) {
 		super(thing);
 
 		logger.debug(
@@ -54,6 +61,11 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 			service = upnpIOService;
 		} else {
 			logger.debug("upnpIOService not set.");
+		}
+		
+		if (discoveryServiceRegistry != null) {
+			this.discoveryServiceRegistry = discoveryServiceRegistry;
+			this.discoveryServiceRegistry.addDiscoveryListener(this);
 		}
 	}
 
@@ -190,5 +202,22 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 		logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
 				new Object[] { variable, value, service,
 						this.getThing().getUID() });
+	}
+	
+	@Override
+	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+		if (getThing().getConfiguration().get(UDN)
+				.equals(result.getProperties().get(UDN))) {
+			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.ONLINE);
+		}
+	}
+
+	@Override
+	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+		logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
+				.getUID());
+		getThing().setStatus(ThingStatus.OFFLINE);
 	}
 }

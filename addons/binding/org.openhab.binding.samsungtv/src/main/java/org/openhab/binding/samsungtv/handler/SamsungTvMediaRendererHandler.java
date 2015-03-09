@@ -18,12 +18,17 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.discovery.DiscoveryListener;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -41,12 +46,13 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
-		UpnpIOParticipant {
+		UpnpIOParticipant, DiscoveryListener {
 
 	private Logger logger = LoggerFactory
 			.getLogger(SamsungTvMediaRendererHandler.class);
 
 	private UpnpIOService service;
+	private DiscoveryServiceRegistry discoveryServiceRegistry;
 	private ScheduledFuture<?> pollingJob;
 
 	/**
@@ -58,7 +64,8 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 			.synchronizedMap(new HashMap<String, String>());
 
 	public SamsungTvMediaRendererHandler(Thing thing,
-			UpnpIOService upnpIOService) {
+			UpnpIOService upnpIOService,
+			DiscoveryServiceRegistry discoveryServiceRegistry) {
 		super(thing);
 
 		logger.debug(
@@ -69,6 +76,11 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 			service = upnpIOService;
 		} else {
 			logger.debug("upnpIOService not set.");
+		}
+		
+		if (discoveryServiceRegistry != null) {
+			this.discoveryServiceRegistry = discoveryServiceRegistry;
+			this.discoveryServiceRegistry.addDiscoveryListener(this);
 		}
 	}
 
@@ -324,5 +336,22 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 		updateResourceState("RenderingControl", "GetColorTemperature",
 				SamsungTvUtils.buildHashMap("InstanceID", "0"));
 	}
+	
+	@Override
+	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+		if (getThing().getConfiguration().get(UDN)
+				.equals(result.getProperties().get(UDN))) {
+			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.ONLINE);
+			onUpdate();
+		}
+	}
 
+	@Override
+	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+		logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
+				.getUID());
+		getThing().setStatus(ThingStatus.OFFLINE);
+	}
 }

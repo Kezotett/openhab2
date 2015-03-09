@@ -14,6 +14,7 @@ import java.util.Collection;
 import org.openhab.binding.samsungtv.handler.SamsungTvAgentHandler;
 import org.openhab.binding.samsungtv.handler.SamsungTvMediaRendererHandler;
 import org.openhab.binding.samsungtv.handler.SamsungTvRemoteControllerHandler;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -36,7 +37,8 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 					SAMSUNG_TV_AGENT_THING_TYPE);
 
 	private UpnpIOService upnpIOService;
-
+	private DiscoveryServiceRegistry discoveryServiceRegistry;
+	
 	@Override
 	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
 		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -48,11 +50,11 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
 		if (thingTypeUID.equals(SAMSUNG_TV_MEDIARENDERER_THING_TYPE)) {
-			return new SamsungTvMediaRendererHandler(thing, upnpIOService);
+			return new SamsungTvMediaRendererHandler(thing, upnpIOService, discoveryServiceRegistry);
 		} else if (thingTypeUID.equals(SAMSUNG_TV_REMOTE_CONTROLLER_THING_TYPE)) {
-			return new SamsungTvRemoteControllerHandler(thing, upnpIOService);
+			return new SamsungTvRemoteControllerHandler(thing, upnpIOService, discoveryServiceRegistry);
 		} else if (thingTypeUID.equals(SAMSUNG_TV_AGENT_THING_TYPE)) {
-			return new SamsungTvAgentHandler(thing, upnpIOService);
+			return new SamsungTvAgentHandler(thing, upnpIOService, discoveryServiceRegistry);
 		}
 
 		return null;
@@ -65,4 +67,12 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 	protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
 		this.upnpIOService = null;
 	}
+	
+    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
+    }
+    
+    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+    	this.discoveryServiceRegistry = null;
+    }
 }
