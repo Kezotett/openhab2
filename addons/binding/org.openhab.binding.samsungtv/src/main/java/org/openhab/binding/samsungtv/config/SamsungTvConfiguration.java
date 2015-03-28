@@ -19,6 +19,6 @@ public class SamsungTvConfiguration {
 	
 	public String udn;
 	public String networkAddress;
-	public String port;
+	public int port;
 	
 }

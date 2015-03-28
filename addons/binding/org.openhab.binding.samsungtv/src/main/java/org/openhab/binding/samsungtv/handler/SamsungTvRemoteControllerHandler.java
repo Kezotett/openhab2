@@ -10,7 +10,6 @@ package org.openhab.binding.samsungtv.handler;
 import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.*;
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -25,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.samsungtv.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.protocol.SamsungTvException;
 import org.openhab.binding.samsungtv.protocol.KeyCode;
 import org.openhab.binding.samsungtv.protocol.SamsungTvRemoteController;
@@ -43,11 +43,10 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 	private Logger logger = LoggerFactory
 			.getLogger(SamsungTvRemoteControllerHandler.class);
 
-	private final static int DEFAULT_TV_PORT = 55000;
-
 	private UpnpIOService service;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
-
+	private SamsungTvConfiguration configuration = null;
+	
 	public SamsungTvRemoteControllerHandler(Thing thing,
 			UpnpIOService upnpIOService,
 			DiscoveryServiceRegistry discoveryServiceRegistry) {
@@ -115,15 +114,14 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 
 	@Override
 	public void initialize() {
-		Configuration configuration = getConfig();
+		configuration = getConfigAs(SamsungTvConfiguration.class);
 
-		if (configuration.get(UDN) != null) {
+		if (configuration.udn != null) {
 			logger.debug("Initializing Samsung TV handler for UDN '{}'",
-					configuration.get(UDN));
-		} else if (configuration.get(NETWORK_ADDRESS) != null) {
+					configuration.udn);
+		} else if (configuration.networkAddress != null) {
 			logger.debug("Initializing Samsung TV handler for address '{}'",
-					configuration.get(NETWORK_ADDRESS));
-
+					configuration.networkAddress);
 		} else {
 			logger.debug("Cannot initalize Samsung TV handler. UDN not set.");
 		}
@@ -153,28 +151,18 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 	 */
 	private void sendKeyCode(final KeyCode key) {
 
-		String udn = (String) this.getThing().getConfiguration().get(UDN);
 		String host = null;
-		int port = DEFAULT_TV_PORT;
-
-		if (udn != null && !udn.isEmpty()) {
+		
+		if (configuration.udn != null && !configuration.udn.isEmpty()) {
 			host = service.getDescriptorURL(this).getHost();
 		} else {
-			host = (String) this.getThing().getConfiguration()
-					.get(NETWORK_ADDRESS);
-		}
-
-		String port_str = (String) this.getThing().getConfiguration()
-				.get(PORT);
-		
-		if (port_str != null && !port_str.isEmpty()) {
-			port = Integer.parseInt(port_str);
+			host = configuration.networkAddress;
 		}
 
 		if (host != null) {
 
 			SamsungTvRemoteController remoteController = new SamsungTvRemoteController(
-					host, port, "openHAB2", "openHAB2");
+					host, configuration.port, "openHAB2", "openHAB2");
 
 			if (remoteController != null) {
 				logger.debug("Try to send command: {}", key);
@@ -184,7 +172,7 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 
 				} catch (SamsungTvException e) {
 					logger.error("Could not send command to device on {}: {}",
-							host + ":" + port, e);
+							host + ":" + configuration.port, e);
 				}
 			}
 		} else {
