@@ -11,6 +11,7 @@ package org.openhab.core.internal.item;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.thing.setup.ThingSetupManager;
 import org.eclipse.smarthome.model.sitemap.Sitemap;
 import org.eclipse.smarthome.model.sitemap.SitemapFactory;
 import org.eclipse.smarthome.model.sitemap.SitemapProvider;
@@ -39,23 +40,40 @@ public class DefaultSitemapProvider implements SitemapProvider {
 
 	@Override
 	public Sitemap getSitemap(String sitemapName) {
-		if(sitemapName.equals("default")) {
+		if(sitemapName.equals("_default")) {
 			SitemapImpl sitemap = (SitemapImpl) SitemapFactory.eINSTANCE.createSitemap();
-			FrameImpl frame = (FrameImpl) SitemapFactory.eINSTANCE.createFrame();
+			FrameImpl mainFrame = (FrameImpl) SitemapFactory.eINSTANCE.createFrame();
+
+	        FrameImpl thingFrame = (FrameImpl) SitemapFactory.eINSTANCE.createFrame();
+	        thingFrame.setLabel("Things");
 
 			sitemap.setLabel("Home");
-			sitemap.setName("default");
-			sitemap.getChildren().add(frame);
+			sitemap.setName("_default");
 
 			for(Item item : itemRegistry.getAll()) {
-				if(item instanceof GroupItem && !item.getName().equals("Things") 
-						&& (item.getGroupNames().isEmpty() || item.getGroupNames().contains("Things"))) {
+				if(item instanceof GroupItem && (item.getTags().contains(ThingSetupManager.TAG_HOME_GROUP) || item.getTags().contains(ThingSetupManager.TAG_THING))) {
 					GroupImpl group = (GroupImpl) SitemapFactory.eINSTANCE.createGroup();
 					group.setItem(item.getName());
-					frame.getChildren().add(group);
+					group.setLabel(item.getLabel());
+					String category = item.getCategory();
+					if(category != null) {
+					    group.setIcon(item.getCategory());
+					}
+					if(item.getTags().contains(ThingSetupManager.TAG_HOME_GROUP)) {
+                        mainFrame.getChildren().add(group);
+					} else {
+                        thingFrame.getChildren().add(group);
+					}
 				}
 			}
-						
+			
+			if(!mainFrame.getChildren().isEmpty()) {
+		         sitemap.getChildren().add(mainFrame);
+			}
+            if(!thingFrame.getChildren().isEmpty()) {
+               sitemap.getChildren().add(thingFrame);
+            }
+			
 			return sitemap;
 		}
 		return null;

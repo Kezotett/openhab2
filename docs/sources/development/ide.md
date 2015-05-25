@@ -15,7 +15,7 @@ Make sure that you have the following things installed on your computer:
 
 ## Setup Instructions
 
-_Note:_ You can find a [screencast of the IDE setup on YouTube](https://www.youtube.com/watch?v=8XbQkKd9wkE).
+_Note:_ Here you can find a [screencast of the IDE setup on YouTube](https://www.youtube.com/watch?v=8XbQkKd9wkE).
 
 Here are step-by-step instructions:
 
@@ -27,6 +27,8 @@ Here are step-by-step instructions:
 1. Switch the perspective to "Plug-in Development"
 1. Select the target platform by selecting `Window->Preferences->Plug-in Development->Target Platform->"openHAB 2"` (OS X: `Eclipse->...` instead of `Window->...`) from the main menu and press Ok. All project should now compile without errors.
 1. To launch openHAB from within your IDE, go to Run->Run Configurations->Eclipse Application->openHAB_Runtime
+
+### Maven build for binary packages
 
 To produce a binary zip of the runtime yourself, you can simply call `mvn clean package` from the repository root and you will find the result in the folder distribution/target.
 

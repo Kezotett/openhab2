@@ -13,6 +13,8 @@ As a first step, you need to decide in which namespace you want to develop your 
 
 ## Creating a skeleton
 
+_Note:_ Here you can find a [screencast of the binding skeleton creation](http://youtu.be/30nhm0yIcvA).
+
 For the openHAB namespace: Once you have [set up your IDE](ide.md), you can go ahead and create a skeleton for your binding. For this, go into your git repository under `<your repository>/addons/binding` and call the script `create_openhab_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
 
 For the Eclipse SmartHome namespace: You need to have a private fork of the Eclipse SmartHome project (https://github.com/eclipse/smarthome). In the local checkout of this git repository, go to `<your eclipse smarthome repository>/binding` and call the script `create_esh_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
@@ -23,21 +25,19 @@ This should give you an easy starting point for your developments. To learn abou
 
 ## Setup and Run the Binding
 
-To setup the binding you need to configure at least one *Thing* and link an *Item* to it. Inside the `openhabhome/conf/things` folder of the distribution project you can define and configure *Things* in file with a `*.things` extensions. The following file defines two things for the Yahoo Weather binding:
+To setup the binding you need to configure at least one *Thing* and link an *Item* to it. Inside the `openhabhome/conf/things` folder of the distribution project you can define and configure *Things* in file with a `*.things` extensions. The following file defines a thing for the Yahoo Weather binding:
 
 ```
 yahooweather:weather:berlin     [ location="638242" ]
-yahooweather:weather:losangeles [ location="2442047", unit="us" ]
 ```
 
-In this example two *Things* of the *ThingType* `yahooweather:weather` are defined with a configuration for the location and for the second definition a unit.
+In this example a *Thing* of the *ThingType* `yahooweather:weather` is defined with a configuration for the location.
 
 Next you need to create *Items* and link them to the *Channel* of your binding. Here is the example of the Yahoo Weather binding:
 
 ```
 Number Berlin_Temperature       "Temperature in Berlin [%.1f °C]"   { channel="yahooweather:weather:berlin:temperature" }
 Number Berlin_Humidity          "Humidity in Berlin [%d %%]"        { channel="yahooweather:weather:berlin:humidity" }
-Number Los_Angeles_Temperature  "Temperature in LA [%.1f °F]"       { channel="yahooweather:weather:losangeles:temperature" }
 ```
 
 The syntax for a channel link is `{ channel = "<binding-id>:<thing-type-id>:<thing-id>:<channel-id>" }`.
