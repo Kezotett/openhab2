@@ -16,9 +16,11 @@ public class SamsungTvConfiguration {
 	public static final String UDN = "udn";
 	public static final String NETWORK_ADDRESS = "networkAddress";
 	public static final String PORT = "port";
+	public static final String REFRESH_INTERVAL = "refreshInterval";
 	
 	public String udn;
 	public String networkAddress;
 	public int port;
+	public int refreshInterval;
 	
 }

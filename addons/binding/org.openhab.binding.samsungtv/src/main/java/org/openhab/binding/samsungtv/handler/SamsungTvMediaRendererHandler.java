@@ -11,13 +11,13 @@ import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.UDN;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -35,6 +36,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.samsungtv.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.SamsungTvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +56,7 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 	private UpnpIOService service;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
 	private ScheduledFuture<?> pollingJob;
-
-	/**
-	 * The default refresh interval when not specified in channel configuration.
-	 */
-	private static final int DEFAULT_REFRESH_INTERVAL = 10;
+	private SamsungTvConfiguration configuration;
 
 	private Map<String, String> stateMap = Collections
 			.synchronizedMap(new HashMap<String, String>());
@@ -143,50 +141,30 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 
 	private synchronized void onUpdate() {
 		if (pollingJob == null || pollingJob.isCancelled()) {
-			Configuration config = getThing().getConfiguration();
-			// use default if not specified
-			int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-			Object refreshConfig = config.get("refresh");
-			if (refreshConfig != null) {
-				refreshInterval = Integer.parseInt((String) refreshConfig);
-			}
-			logger.debug("Start refresh task, interval={}", refreshInterval);
+			logger.debug("Start refresh task, interval={}", configuration.refreshInterval);
 			pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0,
-					refreshInterval, TimeUnit.SECONDS);
+					configuration.refreshInterval, TimeUnit.MILLISECONDS);
 		}
 	}
 
 	@Override
 	public void initialize() {
-		Configuration configuration = getConfig();
+		configuration = getConfigAs(SamsungTvConfiguration.class);
 
-		if (configuration.get(UDN) != null) {
+		if (configuration.udn != null) {
 			logger.debug("Initializing Samsung TV handler for UDN '{}'",
-					configuration.get(UDN));
+					configuration.udn);
 			onUpdate();
 		} else {
 			logger.debug("Cannot initalize Samsung TV handler. UDN not set.");
-		}
-
-		if (getThing().getStatus() == ThingStatus.OFFLINE) {
-			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
 		}
 	}
 
 	@Override
 	public void dispose() {
-
 		if (pollingJob != null && !pollingJob.isCancelled()) {
 			pollingJob.cancel(true);
 			pollingJob = null;
-		}
-
-		if (getThing().getStatus() == ThingStatus.ONLINE) {
-			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
 		}
 	}
 
@@ -339,19 +317,32 @@ public class SamsungTvMediaRendererHandler extends BaseThingHandler implements
 	
 	@Override
 	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-		if (getThing().getConfiguration().get(UDN)
-				.equals(result.getProperties().get(UDN))) {
-			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
-			onUpdate();
+		if(result.getThingUID().equals(this.getThing().getUID())) {
+			if (configuration != null) {
+				updateStatus(ThingStatus.ONLINE);
+			} else {
+				logger.debug("thingDiscovered: Thing not yet initialized");
+			}
 		}
 	}
 
 	@Override
 	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-		logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-				.getUID());
-		getThing().setStatus(ThingStatus.OFFLINE);
+		if(thingUID.equals(this.getThing().getUID())) {
+			updateStatus(ThingStatus.OFFLINE);
+		}
+	}
+
+	@Override
+	public Collection<ThingUID> removeOlderResults(DiscoveryService source,
+			long timestamp, Collection<ThingTypeUID> thingTypeUIDs) {
+		logger.debug("removeOlderResults");
+		return null;
+	}
+
+	@Override
+	public void onStatusChanged(boolean status) {
+		// TODO Auto-generated method stub
+		logger.debug("onStatusChanged");
 	}
 }

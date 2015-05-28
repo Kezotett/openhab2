@@ -10,6 +10,8 @@ package org.openhab.binding.samsungtv.handler;
 import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.*;
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
+import java.util.Collection;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -19,6 +21,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -45,7 +48,7 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 
 	private UpnpIOService service;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
-	private SamsungTvConfiguration configuration = null;
+	private SamsungTvConfiguration configuration;
 	
 	public SamsungTvRemoteControllerHandler(Thing thing,
 			UpnpIOService upnpIOService,
@@ -125,22 +128,10 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 		} else {
 			logger.debug("Cannot initalize Samsung TV handler. UDN not set.");
 		}
-
-		if (getThing().getStatus() == ThingStatus.OFFLINE) {
-			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
-		}
 	}
 
 	@Override
 	public void dispose() {
-
-		if (getThing().getStatus() == ThingStatus.ONLINE) {
-			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
-		}
 	}
 
 	/**
@@ -194,18 +185,32 @@ public class SamsungTvRemoteControllerHandler extends BaseThingHandler
 	
 	@Override
 	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-		if (getThing().getConfiguration().get(UDN)
-				.equals(result.getProperties().get(UDN))) {
-			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
+		if(result.getThingUID().equals(this.getThing().getUID())) {
+			if (configuration != null) {
+				updateStatus(ThingStatus.ONLINE);
+			} else {
+				logger.debug("thingDiscovered: Thing not yet initialized");
+			}
 		}
 	}
 
 	@Override
 	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-		logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-				.getUID());
-		getThing().setStatus(ThingStatus.OFFLINE);
+		if(thingUID.equals(this.getThing().getUID())) {
+			updateStatus(ThingStatus.OFFLINE);
+		}
+	}
+
+	@Override
+	public Collection<ThingUID> removeOlderResults(DiscoveryService source,
+			long timestamp, Collection<ThingTypeUID> thingTypeUIDs) {
+		logger.debug("removeOlderResults");
+		return null;
+	}
+
+	@Override
+	public void onStatusChanged(boolean status) {
+		// TODO Auto-generated method stub
+		logger.debug("onStatusChanged");
 	}
 }
