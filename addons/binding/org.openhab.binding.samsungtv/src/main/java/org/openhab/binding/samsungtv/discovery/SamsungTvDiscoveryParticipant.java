@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
 package org.openhab.binding.samsungtv.discovery;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
-import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.UDN;
+import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SamsungTvDiscoveryParticipant} is responsible processing the
- * results of searches for UPnP devices
+ * The {@link SamsungTvDiscoveryParticipant} is responsible for processing the
+ * results of searched UPnP devices
  * 
  * @author Pauli Anttila - Initial contribution
  */
@@ -37,7 +37,7 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-		return Collections.singleton(SAMSUNG_TV_AGENT_THING_TYPE);
+		return Collections.singleton(SAMSUNG_TV_THING_TYPE);
 	}
 
 	@Override
@@ -47,20 +47,20 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 			Map<String, Object> properties = new HashMap<>(3);
 			String label = "Samsung TV";
 			try {
-				label = device.getDetails().getModelDetails().getModelName();
+				label = device.getDetails().getFriendlyName();
 			} catch (Exception e) {
-				// ignore and use default label
+				// ignore and use the default label
 			}
-			properties.put(UDN, device.getIdentity().getUdn()
-					.getIdentifierString());
+			properties.put(HOST_NAME, device.getIdentity().getDescriptorURL()
+					.getHost());
 
 			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
 					.withProperties(properties).withLabel(label).build();
 
 			logger.debug(
 					"Created a DiscoveryResult for device '{}' with UDN '{}'",
-					device.getDetails().getFriendlyName(), device.getIdentity()
-							.getUdn().getIdentifierString());
+					device.getDetails().getModelDetails().getModelName(),
+					device.getIdentity().getUdn().getIdentifierString());
 			return result;
 		} else {
 			return null;
@@ -70,46 +70,32 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 	@Override
 	public ThingUID getThingUID(RemoteDevice device) {
 		if (device != null) {
-			if (device.getDetails().getManufacturerDetails().getManufacturer() != null
-					&& device.getDetails().getFriendlyName() != null) {
-				if (device.getDetails().getManufacturerDetails()
-						.getManufacturer().toUpperCase()
-						.contains("SAMSUNG ELECTRONICS")) {
 
-					String modelName = device.getDetails().getModelDetails()
-							.getModelName();
+			String manufacturer = device.getDetails().getManufacturerDetails()
+					.getManufacturer();
+			String modelName = device.getDetails().getModelDetails()
+					.getModelName();
+			String friedlyName = device.getDetails().getFriendlyName();
+
+			if (manufacturer != null && modelName != null) {
+
+				if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
 
 					// UDN shouldn't contain '-' characters.
 					String udn = device.getIdentity().getUdn()
 							.getIdentifierString().replace("-", "_");
 
+					// One Samsung TV contains several UPnP devices.
+					// Create unique Samsung TV thing for every MediaRenderer
+					// device and ignore rest of the UPnP devices.
+
 					if (device.getType().getType().equals("MediaRenderer")) {
 
 						logger.debug(
-								"Discovered a Samsung TV model '{}' MediaRenderer thing with UDN '{}'",
-								modelName, udn);
+								"Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'",
+								friedlyName, modelName, udn);
 
-						return new ThingUID(
-								SAMSUNG_TV_MEDIARENDERER_THING_TYPE, udn);
-
-					} else if (device.getType().getType()
-							.equals("RemoteControlReceiver")) {
-
-						logger.debug(
-								"Discovered a Samsung TV model '{}' RemoteController thing with UDN '{}'",
-								modelName, udn);
-
-						return new ThingUID(
-								SAMSUNG_TV_REMOTE_CONTROLLER_THING_TYPE, udn);
-
-					} else if (device.getType().getType()
-							.equals("MainTVServer2")) {
-
-						logger.debug(
-								"Discovered a Samsung TV model '{}' MainTVServer2 thing with UDN '{}'",
-								modelName, udn);
-
-						return new ThingUID(SAMSUNG_TV_AGENT_THING_TYPE, udn);
+						return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
 					}
 				}
 			}

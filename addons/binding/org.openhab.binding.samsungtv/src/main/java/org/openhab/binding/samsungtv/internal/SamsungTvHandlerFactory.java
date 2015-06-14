@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,8 @@ import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
 import java.util.Collection;
 
-import org.openhab.binding.samsungtv.handler.SamsungTvAgentHandler;
-import org.openhab.binding.samsungtv.handler.SamsungTvMediaRendererHandler;
-import org.openhab.binding.samsungtv.handler.SamsungTvRemoteControllerHandler;
+import org.jupnp.UpnpService;
+import org.openhab.binding.samsungtv.handler.SamsungTvHandler;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -32,13 +31,12 @@ import com.google.common.collect.Lists;
 public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
 	private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-			.newArrayList(SAMSUNG_TV_MEDIARENDERER_THING_TYPE,
-					SAMSUNG_TV_REMOTE_CONTROLLER_THING_TYPE,
-					SAMSUNG_TV_AGENT_THING_TYPE);
+			.newArrayList(SAMSUNG_TV_THING_TYPE);
 
 	private UpnpIOService upnpIOService;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
-	
+	private UpnpService upnpService;
+
 	@Override
 	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
 		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -49,12 +47,9 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
 		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (thingTypeUID.equals(SAMSUNG_TV_MEDIARENDERER_THING_TYPE)) {
-			return new SamsungTvMediaRendererHandler(thing, upnpIOService, discoveryServiceRegistry);
-		} else if (thingTypeUID.equals(SAMSUNG_TV_REMOTE_CONTROLLER_THING_TYPE)) {
-			return new SamsungTvRemoteControllerHandler(thing, upnpIOService, discoveryServiceRegistry);
-		} else if (thingTypeUID.equals(SAMSUNG_TV_AGENT_THING_TYPE)) {
-			return new SamsungTvAgentHandler(thing, upnpIOService, discoveryServiceRegistry);
+		if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {
+			return new SamsungTvHandler(thing, upnpIOService,
+					discoveryServiceRegistry, upnpService);
 		}
 
 		return null;
@@ -67,12 +62,22 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 	protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
 		this.upnpIOService = null;
 	}
-	
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
-    }
-    
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-    	this.discoveryServiceRegistry = null;
-    }
+
+	protected void setDiscoveryServiceRegistry(
+			DiscoveryServiceRegistry discoveryServiceRegistry) {
+		this.discoveryServiceRegistry = discoveryServiceRegistry;
+	}
+
+	protected void unsetDiscoveryServiceRegistry(
+			DiscoveryServiceRegistry discoveryServiceRegistry) {
+		this.discoveryServiceRegistry = null;
+	}
+
+	protected void setUpnpService(UpnpService upnpService) {
+		this.upnpService = upnpService;
+	}
+
+	protected void unsetUpnpService(UpnpService upnpService) {
+		this.upnpService = null;
+	}
 }

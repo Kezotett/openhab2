@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,13 +13,11 @@ package org.openhab.binding.samsungtv.config;
  * @author Pauli Anttila - Initial contribution
  */
 public class SamsungTvConfiguration {
-	public static final String UDN = "udn";
-	public static final String NETWORK_ADDRESS = "networkAddress";
+	public static final String HOST_NAME = "hostName";
 	public static final String PORT = "port";
 	public static final String REFRESH_INTERVAL = "refreshInterval";
 	
-	public String udn;
-	public String networkAddress;
+	public String hostName;
 	public int port;
 	public int refreshInterval;
 	
