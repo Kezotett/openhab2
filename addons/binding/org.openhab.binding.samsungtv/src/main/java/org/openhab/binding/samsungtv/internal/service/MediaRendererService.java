@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class MediaRendererService implements UpnpIOParticipant,
 		SamsungTvService {
 
-	private final String SERVICE_NAME = "RenderingControl";
+	public final static String SERVICE_NAME = "MediaRenderer";
 	private final List<String> supportedCommands = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS, COLOR_TEMPERATURE);
 
 	private Logger logger = LoggerFactory.getLogger(MediaRendererService.class);
@@ -113,6 +113,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 		}
 	}
 
+	@Override
+	public void clearCache() {
+		stateMap.clear();
+	}
+
 	private Runnable pollingRunnable = new Runnable() {
 
 		@Override
@@ -120,19 +125,19 @@ public class MediaRendererService implements UpnpIOParticipant,
 			if (isRegistered()) {
 
 				try {
-					updateResourceState(SERVICE_NAME, "GetVolume",
+					updateResourceState("RenderingControl", "GetVolume",
 							SamsungTvUtils.buildHashMap("InstanceID", "0",
 									"Channel", "Master"));
-					updateResourceState(SERVICE_NAME, "GetMute",
+					updateResourceState("RenderingControl", "GetMute",
 							SamsungTvUtils.buildHashMap("InstanceID", "0",
 									"Channel", "Master"));
-					updateResourceState(SERVICE_NAME, "GetBrightness",
+					updateResourceState("RenderingControl", "GetBrightness",
 							SamsungTvUtils.buildHashMap("InstanceID", "0"));
-					updateResourceState(SERVICE_NAME, "GetContrast",
+					updateResourceState("RenderingControl", "GetContrast",
 							SamsungTvUtils.buildHashMap("InstanceID", "0"));
-					updateResourceState(SERVICE_NAME, "GetSharpness",
+					updateResourceState("RenderingControl", "GetSharpness",
 							SamsungTvUtils.buildHashMap("InstanceID", "0"));
-					updateResourceState(SERVICE_NAME, "GetColorTemperature",
+					updateResourceState("RenderingControl", "GetColorTemperature",
 							SamsungTvUtils.buildHashMap("InstanceID", "0"));
 
 				} catch (Exception e) {
@@ -262,11 +267,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetVolume",
+		updateResourceState("RenderingControl", "SetVolume",
 				SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel",
 						"Master", "DesiredVolume", Integer.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetVolume",
+		updateResourceState("RenderingControl", "GetVolume",
 				SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel",
 						"Master"));
 	}
@@ -281,11 +286,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetMute",
+		updateResourceState("RenderingControl", "SetMute",
 				SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel",
 						"Master", "DesiredMute", Boolean.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetMute",
+		updateResourceState("RenderingControl", "GetMute",
 				SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel",
 						"Master"));
 
@@ -302,11 +307,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetBrightness",
+		updateResourceState("RenderingControl", "SetBrightness",
 				SamsungTvUtils.buildHashMap("InstanceID", "0",
 						"DesiredBrightness", Integer.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetBrightness",
+		updateResourceState("RenderingControl", "GetBrightness",
 				SamsungTvUtils.buildHashMap("InstanceID", "0"));
 	}
 
@@ -321,11 +326,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetContrast",
+		updateResourceState("RenderingControl", "SetContrast",
 				SamsungTvUtils.buildHashMap("InstanceID", "0",
 						"DesiredContrast", Integer.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetContrast",
+		updateResourceState("RenderingControl", "GetContrast",
 				SamsungTvUtils.buildHashMap("InstanceID", "0"));
 	}
 
@@ -340,11 +345,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetSharpness",
+		updateResourceState("RenderingControl", "SetSharpness",
 				SamsungTvUtils.buildHashMap("InstanceID", "0",
 						"DesiredSharpness", Integer.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetSharpness",
+		updateResourceState("RenderingControl", "GetSharpness",
 				SamsungTvUtils.buildHashMap("InstanceID", "0"));
 	}
 
@@ -359,11 +364,11 @@ public class MediaRendererService implements UpnpIOParticipant,
 					+ "' not supported");
 		}
 
-		updateResourceState(SERVICE_NAME, "SetColorTemperature",
+		updateResourceState("RenderingControl", "SetColorTemperature",
 				SamsungTvUtils.buildHashMap("InstanceID", "0",
 						"DesiredColorTemperature", Integer.toString(newValue)));
 
-		updateResourceState(SERVICE_NAME, "GetColorTemperature",
+		updateResourceState("RenderingControl", "GetColorTemperature",
 				SamsungTvUtils.buildHashMap("InstanceID", "0"));
 	}
 

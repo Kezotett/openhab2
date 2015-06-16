@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
  */
 public class MainTVServerService implements UpnpIOParticipant, SamsungTvService {
 
-	private static final String SERVICE_NAME = "MainTVAgent2";
+	public static final String SERVICE_NAME = "MainTVServer2";
 	private static final List<String> supportedCommands = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
 	
 	private Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
@@ -113,22 +113,27 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 		}
 	}
 
+	@Override
+	public void clearCache() {
+		stateMap.clear();
+	}
+
 	private Runnable pollingRunnable = new Runnable() {
 
 		@Override
 		public void run() {
 			if (isRegistered()) {
 				try {
-					updateResourceState(SERVICE_NAME,
+					updateResourceState("MainTVAgent2",
 							"GetCurrentMainTVChannel", null);
 
-					updateResourceState(SERVICE_NAME,
+					updateResourceState("MainTVAgent2",
 							"GetCurrentExternalSource", null);
 
-					updateResourceState(SERVICE_NAME,
+					updateResourceState("MainTVAgent2",
 							"GetCurrentContentRecognition", null);
 
-					updateResourceState(SERVICE_NAME, "GetCurrentBrowserURL",
+					updateResourceState("MainTVAgent2", "GetCurrentBrowserURL",
 							null);
 				} catch (Exception e) {
 					logger.debug("Exception during poll : {}", e);
@@ -240,7 +245,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
 	private void setSourceName(Command command) {
 
-		Map<String, String> result = updateResourceState(SERVICE_NAME,
+		Map<String, String> result = updateResourceState("MainTVAgent2",
 				"GetSourceList", null);
 
 		String source = command.toString();
@@ -259,7 +264,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 		}
 
 		if (source != null && id != null) {
-			result = updateResourceState(SERVICE_NAME, "SetMainTVSource",
+			result = updateResourceState("MainTVAgent2", "SetMainTVSource",
 					SamsungTvUtils.buildHashMap("Source", source, "ID", id,
 							"UiID", "0"));
 
@@ -277,7 +282,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
 	private void setBrowserUrl(Command command) {
 
-		Map<String, String> result = updateResourceState(SERVICE_NAME,
+		Map<String, String> result = updateResourceState("MainTVAgent2",
 				"RunBrowser",
 				SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 

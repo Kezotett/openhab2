@@ -67,5 +67,12 @@ public interface SamsungTvService {
 	 * 
 	 */
 	public void stop();
+	
+	/**
+	 * Procedure for clearing internal caches.
+	 * 
+	 */
+	public void clearCache();
+	
 
 }

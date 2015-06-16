@@ -98,7 +98,7 @@
 
 	<channel-type id="channel">
 		<item-type>Number</item-type>
-		<label>TV Channel</label>
+		<label>Channel</label>
 		<description>Selected TV channel number.</description>
 	</channel-type>
 
@@ -132,7 +132,6 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.</description>
-		<category>PowerOutlet</category>
 	</channel-type>
 
 	<channel-type id="keycode">

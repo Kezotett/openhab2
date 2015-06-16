@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RemoteControllerService implements SamsungTvService {
 
-	private final String SERVICE_NAME = "RemoteControlReceiver";
+	public static final String SERVICE_NAME = "RemoteControlReceiver";
 	private final List<String> supportedCommands = Arrays.asList(KEY_CODE, POWER, CHANNEL);
 
 	private Logger logger = LoggerFactory
@@ -74,6 +74,10 @@ public class RemoteControllerService implements SamsungTvService {
 
 	@Override
 	public void stop() {
+	}
+
+	@Override
+	public void clearCache() {
 	}
 
 	@Override

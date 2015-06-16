@@ -9,7 +9,7 @@ package org.openhab.binding.samsungtv.handler;
 
 import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +36,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.samsungtv.config.SamsungTvConfiguration;
-import org.openhab.binding.samsungtv.internal.service.MainTVServerService;
-import org.openhab.binding.samsungtv.internal.service.MediaRendererService;
-import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
+import org.openhab.binding.samsungtv.internal.service.ServiceFactory;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.binding.samsungtv.internal.service.api.ValueReceiver;
 import org.slf4j.Logger;
@@ -55,10 +53,7 @@ public class SamsungTvHandler extends BaseThingHandler implements
 
 	private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
-	/** Polling interval in milliseconds for searching UPnP devices */
-	private final int POLLING_INTERVALL = 10000;
-
-	/** Polling job for searching UPnP devices */
+	/** Polling job for searching UPnP devices on startup */
 	private ScheduledFuture<?> pollingJob;
 
 	/** Global configuration for Samsung TV Thing */
@@ -69,9 +64,7 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	private UpnpService upnpService;
 
 	// Samsung TV services */
-	private MainTVServerService mainTVServerService;
-	private MediaRendererService mediaRendererService;
-	private RemoteControllerService remoteControllerService;
+	private List<SamsungTvService> services;
 
 	private boolean powerOn = false;
 
@@ -99,31 +92,37 @@ public class SamsungTvHandler extends BaseThingHandler implements
 			this.upnpService = upnpService;
 			this.upnpService.getRegistry().addListener(this);
 		}
+
+		services = new ArrayList<>();
 	}
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
 		logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-		// Delegate command to correct service
+		if (getThing().getStatus() == ThingStatus.ONLINE) {
+			
+			// Delegate command to correct service
 
-		String channel = channelUID.getId();
+			String channel = channelUID.getId();
 
-		for (SamsungTvService service : Arrays.asList(mainTVServerService,
-				mediaRendererService, remoteControllerService)) {
-			if (service != null) {
-				List<String> supportedCommands = service
-						.getSupportedChannelNames();
-				for (String s : supportedCommands) {
-					if (channel.equals(s)) {
-						service.handleCommand(channel, command);
-						return;
+			for (SamsungTvService service : services) {
+				if (service != null) {
+					List<String> supportedCommands = service
+							.getSupportedChannelNames();
+					for (String s : supportedCommands) {
+						if (channel.equals(s)) {
+							service.handleCommand(channel, command);
+							return;
+						}
 					}
 				}
 			}
-		}
 
-		logger.warn("Channel '{}' not supported", channelUID);
+			logger.warn("Channel '{}' not supported", channelUID);
+		} else {
+			logger.warn("Samsung TV '{}' is OFFLINE", getThing().getUID());
+		}
 	}
 
 	private synchronized void updatePowerState(boolean state) {
@@ -139,29 +138,25 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	 * Media Renderer UPnP device. This polling job tries to find another UPnP
 	 * devices related to same Samsung TV and create handler for those.
 	 */
-	private Runnable pollingRunnable = new Runnable() {
+	private Runnable scanUPnPDevicesRunnable = new Runnable() {
 
 		@Override
 		public void run() {
-			logger.debug("Check UPnP services");
+			logger.debug("Check UPnP devices");
 			checkAndCreateServices();
-
-			if (allServicesCreated()) {
-				logger.debug("All UPnP services created, cancel polling job");
-				pollingJob.cancel(false);
-			}
 		}
 	};
 
 	@Override
 	public void initialize() {
+		updateStatus(ThingStatus.OFFLINE);
+		
 		configuration = getConfigAs(SamsungTvConfiguration.class);
 
 		logger.debug("Initializing Samsung TV handler for uid '{}'", getThing()
 				.getUID());
 
-		pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0,
-				POLLING_INTERVALL, TimeUnit.MILLISECONDS);
+		pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -192,10 +187,11 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	@Override
 	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
 		if (thingUID.equals(this.getThing().getUID())) {
-			logger.debug("thingRemoved");
+			logger.debug("thingRemoved: shutdown services");
+			updateStatus(ThingStatus.OFFLINE);
+			stopServices();
 			updateState(new ChannelUID(getThing().getUID(), POWER),
 					OnOffType.OFF);
-			updateStatus(ThingStatus.OFFLINE);
 			updatePowerState(false);
 		}
 	}
@@ -270,28 +266,20 @@ public class SamsungTvHandler extends BaseThingHandler implements
 				logger.debug(" modelName={}, udn={}, type={}", modelName, udn,
 						type);
 
-				if ("MainTVServer2".equals(type)) {
-					if (mainTVServerService == null) {
-						logger.debug("Initialize MainTVServer service");
-						mainTVServerService = new MainTVServerService(service,
-								udn, configuration.refreshInterval);
-						startService(mainTVServerService);
+				if (!isServiceCreated(type)) {
+					SamsungTvService newService = ServiceFactory.createService(
+							type, service, udn, configuration.refreshInterval,
+							configuration.hostName, configuration.port);
+
+					if (newService != null) {
+						startService(newService);
+						services.add(newService);
 					}
-				}
-				if ("MediaRenderer".equals(type)) {
-					if (mediaRendererService == null) {
-						logger.debug("Initialize mediaRendererService service");
-						mediaRendererService = new MediaRendererService(
-								service, udn, configuration.refreshInterval);
-						startService(mediaRendererService);
-					}
-				}
-				if ("RemoteControlReceiver".equals(type)) {
-					if (remoteControllerService == null) {
-						logger.debug("Initialize RemoteControlReceiver service");
-						remoteControllerService = new RemoteControllerService(
-								configuration.hostName, configuration.port);
-						startService(remoteControllerService);
+				} else {
+					SamsungTvService service = findServiceInstance(type);
+					if (service != null) {
+						logger.debug("Device rediscovered, clear caches");
+						service.clearCache();
 					}
 				}
 			}
@@ -300,17 +288,34 @@ public class SamsungTvHandler extends BaseThingHandler implements
 		}
 	}
 
-	private boolean allServicesCreated() {
-		if (mainTVServerService == null) {
-			return false;
+	private SamsungTvService findServiceInstance(String serviceName) {
+		Class<?> cl = ServiceFactory.getClassByServiceName(serviceName);
+
+		if (cl != null) {
+			for (SamsungTvService service : services) {
+				if (service != null) {
+					if (service.getClass() == cl) {
+						return service;
+					}
+				}
+			}
 		}
-		if (mediaRendererService == null) {
-			return false;
+		return null;
+	}
+
+	private boolean isServiceCreated(String serviceName) {
+		Class<?> cl = ServiceFactory.getClassByServiceName(serviceName);
+
+		if (cl != null) {
+			for (SamsungTvService service : services) {
+				if (service != null) {
+					if (service.getClass() == cl) {
+						return true;
+					}
+				}
+			}
 		}
-		if (remoteControllerService == null) {
-			return false;
-		}
-		return true;
+		return false;
 	}
 
 	private void startService(SamsungTvService service) {
@@ -329,9 +334,10 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	}
 
 	private void stopServices() {
-		stopService(mainTVServerService);
-		stopService(mediaRendererService);
-		stopService(remoteControllerService);
+		for (SamsungTvService service : services) {
+			stopService(service);
+		}
+		services.clear();
 	}
 
 	@Override
