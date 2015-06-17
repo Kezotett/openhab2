@@ -59,11 +59,11 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	/** Global configuration for Samsung TV Thing */
 	private SamsungTvConfiguration configuration;
 
-	private UpnpIOService service;
+	private UpnpIOService upnpIOService;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
 	private UpnpService upnpService;
 
-	// Samsung TV services */
+	/** Samsung TV services */
 	private List<SamsungTvService> services;
 
 	private boolean powerOn = false;
@@ -78,7 +78,7 @@ public class SamsungTvHandler extends BaseThingHandler implements
 				.getUID());
 
 		if (upnpIOService != null) {
-			service = upnpIOService;
+			this.upnpIOService = upnpIOService;
 		} else {
 			logger.debug("upnpIOService not set.");
 		}
@@ -91,6 +91,8 @@ public class SamsungTvHandler extends BaseThingHandler implements
 		if (upnpService != null) {
 			this.upnpService = upnpService;
 			this.upnpService.getRegistry().addListener(this);
+		} else {
+			logger.debug("upnpService not set.");
 		}
 
 		services = new ArrayList<>();
@@ -101,7 +103,7 @@ public class SamsungTvHandler extends BaseThingHandler implements
 		logger.debug("Received channel: {}, command: {}", channelUID, command);
 
 		if (getThing().getStatus() == ThingStatus.ONLINE) {
-			
+
 			// Delegate command to correct service
 
 			String channel = channelUID.getId();
@@ -150,13 +152,14 @@ public class SamsungTvHandler extends BaseThingHandler implements
 	@Override
 	public void initialize() {
 		updateStatus(ThingStatus.OFFLINE);
-		
+
 		configuration = getConfigAs(SamsungTvConfiguration.class);
 
 		logger.debug("Initializing Samsung TV handler for uid '{}'", getThing()
 				.getUID());
 
-		pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0, TimeUnit.MILLISECONDS);
+		pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0,
+				TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -266,9 +269,11 @@ public class SamsungTvHandler extends BaseThingHandler implements
 				logger.debug(" modelName={}, udn={}, type={}", modelName, udn,
 						type);
 
-				if (!isServiceCreated(type)) {
+				SamsungTvService service = findServiceInstance(type);
+				if (service == null) {
 					SamsungTvService newService = ServiceFactory.createService(
-							type, service, udn, configuration.refreshInterval,
+							type, upnpIOService, udn,
+							configuration.refreshInterval,
 							configuration.hostName, configuration.port);
 
 					if (newService != null) {
@@ -276,11 +281,8 @@ public class SamsungTvHandler extends BaseThingHandler implements
 						services.add(newService);
 					}
 				} else {
-					SamsungTvService service = findServiceInstance(type);
-					if (service != null) {
-						logger.debug("Device rediscovered, clear caches");
-						service.clearCache();
-					}
+					logger.debug("Device rediscovered, clear caches");
+					service.clearCache();
 				}
 			}
 		} else {
@@ -301,21 +303,6 @@ public class SamsungTvHandler extends BaseThingHandler implements
 			}
 		}
 		return null;
-	}
-
-	private boolean isServiceCreated(String serviceName) {
-		Class<?> cl = ServiceFactory.getClassByServiceName(serviceName);
-
-		if (cl != null) {
-			for (SamsungTvService service : services) {
-				if (service != null) {
-					if (service.getClass() == cl) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
 	}
 
 	private void startService(SamsungTvService service) {
