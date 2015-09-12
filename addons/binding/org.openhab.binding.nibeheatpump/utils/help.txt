@@ -1,0 +1,8 @@
+Command to convert Nibe CSV file character set to UTF-8:
+iconv -f iso-8859-1 -t utf-8 F1X45.csv > F1X45_utf8.csv
+
+Command to create channel-types from CSV file:
+awk -f channel-types.awk F1X45_utf8.csv > F1X45.xml
+
+Command to create channels from CSV file:
+awk -f channels.awk F1X45_utf8.csv > F1X45-channels.xml
