@@ -123,7 +123,7 @@ public class SamsungTvHandler extends BaseThingHandler implements
 
 			logger.warn("Channel '{}' not supported", channelUID);
 		} else {
-			logger.warn("Samsung TV '{}' is OFFLINE", getThing().getUID());
+			logger.debug("Samsung TV '{}' is OFFLINE", getThing().getUID());
 		}
 	}
 
